@@ -1,0 +1,26 @@
+import React from 'react'
+import { Routes, Route, Navigate } from "react-router-dom";
+
+import Feed from "./pages/Feed"
+import SignUp from "./pages/SignUp"
+import Login from './pages/Login';
+import Profile from "./pages/Profile"
+
+const App = () => {
+  return (
+    <div>
+      <Routes>
+        {/* <Route path="/" element={authUser ? <Feed /> : <Navigate to="/login" />} />
+        <Route path="/signup" element={!authUser ? <SignUp /> : <Navigate to="/" />} /> */}
+        {/* <Route path="/login" element={!authUser ? <Login /> : <Navigate to="/" />} /> */}
+        <Route path="/" element={<Feed />} />
+        <Route path="/signup" element={<SignUp />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/profile" element={<Profile />} />
+        {/* <Route path="/profile" element={authUser ? <Profile /> : <Navigate to="/login" />} /> */}
+      </Routes>
+    </div>
+  )
+}
+
+export default App

@@ -1,0 +1,9 @@
+In college, students often work independently on software projects as part of their coursework, hackathons, or personal learning. While building these projects, students frequently face situations where they get stuck due to a bug, lack of experience with a particular technology, or the need to implement a new feature. In such cases, having access to a peer who understands the required tech stack can significantly speed up development and improve learning.
+
+Currently, students rely on personal contacts or small friend groups to seek help, which limits collaboration and prevents skilled students across the college from discovering projects where they could contribute. There is no centralized platform within the college that allows students to openly share their projects, describe the issues or features they need help with, and invite others to contribute in a structured and transparent way.
+
+The goal is to build a college-wide collaboration platform where students can share their ongoing projects by providing the project name, description, and GitHub repository link. Project owners should be able to create public posts requesting help for specific issues or feature implementations. These posts should be visible to all students in the college. Any student who believes they can help should be able to send a request to contribute.
+
+The project owner can review requester profiles and choose to accept or reject requests. Multiple contributors may be accepted for a single issue or feature if needed. Once the issue has been resolved or the feature has been successfully implemented, the project owner should be able to close the post.
+
+This platform aims to promote peer-to-peer learning, encourage collaborative problem-solving, and introduce students to real-world development practices such as open-source collaboration and code contribution workflows.
