@@ -1,6 +1,6 @@
 import React from 'react'
 import { Routes, Route, Navigate } from "react-router-dom";
-
+import { Toaster } from "react-hot-toast";
 import Feed from "./pages/Feed"
 import SignUp from "./pages/SignUp"
 import Login from './pages/Login';
@@ -19,6 +19,8 @@ const App = () => {
         <Route path="/profile" element={<Profile />} />
         {/* <Route path="/profile" element={authUser ? <Profile /> : <Navigate to="/login" />} /> */}
       </Routes>
+
+      < Toaster />
     </div>
   )
 }

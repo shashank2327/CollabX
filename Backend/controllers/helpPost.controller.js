@@ -1,105 +1,171 @@
 import HelpPost from "../models/helpPost.model.js";
-import Project from "../models/project.model.js";
 
 /**
- * @desc   Create a help post (project owner only)
- * @route  POST /api/help-posts
+ * 1️⃣ Create a help post
+ * POST /api/help-posts
  */
 export const createHelpPost = async (req, res) => {
   try {
-    const { projectId, title, description, helpType } = req.body;
+    const {
+      title,
+      description,
+      techStack,
+      githubRepoUrl,
+      expectedContribution,
+    } = req.body;
 
-    if (!projectId || !title || !helpType) {
-      return res.status(400).json({ message: "Required fields missing" });
-    }
-
-    const project = await Project.findById(projectId);
-    if (!project) {
-      return res.status(404).json({ message: "Project not found" });
-    }
-
-    // Only project owner can create help post
-    if (project.ownerId.toString() !== req.user.id.toString()) {
-      return res.status(403).json({ message: "Not authorized" });
+    if (!title || !description || !techStack || techStack.length === 0) {
+      return res.status(400).json({
+        message: "Title, description and tech stack are required",
+      });
     }
 
     const helpPost = await HelpPost.create({
-      projectId,
       ownerId: req.user.id,
       title,
       description,
-      helpType
+      techStack,
+      githubRepoUrl,
+      expectedContribution,
     });
 
-    res.status(201).json(helpPost);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error" });
+    return res.status(201).json({
+      message: "Help post created successfully",
+      helpPost,
+    });
+  } catch (error) {
+    console.error("Create help post error:", error);
+    return res.status(500).json({
+      message: "Failed to create help post",
+    });
   }
 };
 
 /**
- * @desc   Get all open help posts (college-wide)
- * @route  GET /api/help-posts
+ * 2️⃣ Get all OPEN help posts created by logged-in user
+ * GET /api/help-posts/my/open
  */
-export const getAllHelpPosts = async (req, res) => {
+export const getMyOpenHelpPosts = async (req, res) => {
   try {
-    const helpPosts = await HelpPost.find({ status: "open" })
-      .populate("ownerId", "name skills githubUsername")
-      .populate("projectId", "projectName githubRepoUrl")
-      .sort({ createdAt: -1 });
+    const posts = await HelpPost.find({
+      ownerId: req.user.id,
+      status: "OPEN",
+    }).sort({ createdAt: -1 });
 
-    res.json(helpPosts);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error" });
+    return res.status(200).json({
+      count: posts.length,
+      posts,
+    });
+  } catch (error) {
+    console.error("Get open help posts error:", error);
+    return res.status(500).json({
+      message: "Failed to fetch open help posts",
+    });
   }
 };
 
 /**
- * @desc   Get single help post by ID
- * @route  GET /api/help-posts/:id
+ * 3️⃣ Get all CLOSED help posts created by logged-in user
+ * GET /api/help-posts/my/closed
+ */
+export const getMyClosedHelpPosts = async (req, res) => {
+  try {
+    const posts = await HelpPost.find({
+      ownerId: req.user.id,
+      status: "CLOSED",
+    }).sort({ updatedAt: -1 });
+
+    return res.status(200).json({
+      count: posts.length,
+      posts,
+    });
+  } catch (error) {
+    console.error("Get closed help posts error:", error);
+    return res.status(500).json({
+      message: "Failed to fetch closed help posts",
+    });
+  }
+};
+
+/**
+ * 4️⃣ Get a single help post by ID
+ * GET /api/help-posts/:id
  */
 export const getHelpPostById = async (req, res) => {
   try {
-    const helpPost = await HelpPost.findById(req.params.id)
-      .populate("ownerId", "name bio skills githubUsername")
-      .populate("projectId", "projectName githubRepoUrl");
+    const { id } = req.params;
+
+    const helpPost = await HelpPost.findById(id)
+      .populate("ownerId", "name email githubUsername avatarUrl")
+      .populate({
+        path: "contributors",
+        populate: {
+          path: "userId",
+          select: "name email githubUsername avatarUrl",
+        },
+      });
 
     if (!helpPost) {
-      return res.status(404).json({ message: "Help post not found" });
+      return res.status(404).json({
+        message: "Help post not found",
+      });
     }
 
-    res.json(helpPost);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error" });
+    return res.status(200).json({
+      helpPost,
+    });
+  } catch (error) {
+    console.error("Get help post by id error:", error);
+    return res.status(500).json({
+      message: "Failed to fetch help post",
+    });
   }
 };
 
 /**
- * @desc   Close help post (owner only)
- * @route  PATCH /api/help-posts/:id/close
+ * 5️⃣ Close a help post
+ * PATCH /api/help-posts/:id/close
  */
 export const closeHelpPost = async (req, res) => {
   try {
-    const helpPost = await HelpPost.findById(req.params.id);
+    const { id } = req.params;
+
+    // Find the help post
+    const helpPost = await HelpPost.findById(id);
 
     if (!helpPost) {
-      return res.status(404).json({ message: "Help post not found" });
+      return res.status(404).json({
+        message: "Help post not found",
+      });
     }
 
+    // Only owner can close the help post
     if (helpPost.ownerId.toString() !== req.user.id.toString()) {
-      return res.status(403).json({ message: "Not authorized" });
+      return res.status(403).json({
+        message: "You are not allowed to close this help post",
+      });
     }
 
-    helpPost.status = "closed";
-    helpPost.closedAt = new Date();
+    // If already closed
+    if (helpPost.status === "CLOSED") {
+      return res.status(400).json({
+        message: "Help post is already closed",
+      });
+    }
+
+    // Close the post
+    helpPost.status = "CLOSED";
     await helpPost.save();
-    console.log(helpPost)
-    res.json({ message: "Help post closed successfully" });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error" });
+
+    return res.status(200).json({
+      message: "Help post closed successfully",
+      helpPost,
+    });
+  } catch (error) {
+    console.error("Close help post error:", error);
+    return res.status(500).json({
+      message: "Failed to close help post",
+    });
   }
 };
+

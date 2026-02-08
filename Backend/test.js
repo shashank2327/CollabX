@@ -3,7 +3,6 @@ import dotenv from "dotenv";
 import cors from "cors";
 
 import authRoutes from "./routes/auth.routes.js";
-import projectRoutes from "./routes/project.routes.js";
 import helpPostRoutes from "./routes/helpPost.routes.js";
 import requestRoutes from "./routes/request.routes.js";
 import userRoutes from "./routes/user.routes.js";
@@ -25,7 +24,6 @@ app.use(cors(
 // API Routes
 // =======================
 app.use("/api/auth", authRoutes);
-app.use("/api/projects", projectRoutes);
 app.use("/api/help-posts", helpPostRoutes);
 app.use("/api/requests", requestRoutes);
 app.use("/api/users", userRoutes);

@@ -22,7 +22,7 @@ export const UserProvider = ({ children }) => {
                 // Token exists, so we fetch the user data
                 const response = await api.get(API_PATHS.AUTH.ME);
                 // Ensure we extract the user object correctly
-                console.log(response)
+                // console.log(response)
                 setUser(response.data.user || response.data);
             } catch (error) {
                 console.error("Session expired or invalid:", error);

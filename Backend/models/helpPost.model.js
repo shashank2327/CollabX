@@ -2,37 +2,61 @@ import mongoose from "mongoose";
 
 const helpPostSchema = new mongoose.Schema(
   {
-    projectId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Project",
-      required: true
-    },
+    // User who created the help post
     ownerId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true
+      required: true,
     },
+
+    // Main content
     title: {
       type: String,
-      required: true
+      required: true,
+      trim: true,
     },
+
     description: {
       type: String,
+      required: true,
     },
-    helpType: {
+
+    // Tech stack required for help
+    techStack: {
+      type: [String],
+      required: true,
+    },
+
+    // Optional GitHub repository
+    githubRepoUrl: {
       type: String,
-      enum: ["bug", "feature", "guidance"],
-      required: true
+      trim: true,
     },
+
+    // What kind of help is needed
+    expectedContribution: {
+      type: String, // e.g. "Fix bug", "Add feature", "Refactor", "Review code"
+      trim: true,
+    },
+
+    // Current status of help post
     status: {
       type: String,
-      enum: ["open", "closed"],
-      default: "open"
+      enum: ["OPEN", "CLOSED"],
+      default: "OPEN",
     },
-    
-    
+
+    // Accepted contributors (NOT requests)
+    contributors: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Contributor",
+      },
+    ],
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  }
 );
 
 export default mongoose.model("HelpPost", helpPostSchema);

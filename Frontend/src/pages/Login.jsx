@@ -32,7 +32,8 @@ const Login = () => {
 
       const response = await api.post(API_PATHS.AUTH.LOGIN, payload);
       const { token } = response.data;
-      console.log(token);
+      
+      console.log(response)
       if (token) {
         // This updates the context AND saves the token to localStorage
         updateUser(response.data);
