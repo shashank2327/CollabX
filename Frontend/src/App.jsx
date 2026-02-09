@@ -1,42 +1,90 @@
-import React from 'react'
+import React from 'react';
 import { Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
-import Feed from "./pages/Feed"
-import SignUp from "./pages/SignUp"
+
+// Pages
+import LandingPage from './pages/LandingPage';
 import Login from './pages/Login';
-import Profile from "./pages/Profile"
+import SignUp from "./pages/SignUp";
+import Feed from "./pages/Feed";
 import CreatePost from './pages/CreatePost';
+import Profile from "./pages/Profile";
 import PostDetails from './pages/PostDetails';
 import MyOpenPosts from './pages/MyOpenPosts';
 import MyClosedPosts from './pages/MyClosedPosts';
 import MyContribution from './pages/MyContribution';
 import EditPost from './pages/EditPost';
-import LandingPage from './pages/LandingPage';
+
+// Components
+import ProtectedRoute from './components/ProtectedRoute';
 
 const App = () => {
   return (
     <div>
       <Routes>
-        {/* <Route path="/" element={authUser ? <Feed /> : <Navigate to="/login" />} />
-        <Route path="/signup" element={!authUser ? <SignUp /> : <Navigate to="/" />} /> */}
-        {/* <Route path="/login" element={!authUser ? <Login /> : <Navigate to="/" />} /> */}
+        {/* --- PUBLIC ROUTES --- */}
         <Route path="/" element={<LandingPage />} />
-        <Route path="/feed" element={<Feed />} />
-        <Route path="/create-post" element={<CreatePost />} />
-        <Route path="/signup" element={<SignUp />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/post/:id" element={<PostDetails />} />
-        <Route path="/open-posts" element={<MyOpenPosts />} />
-        <Route path="/closed-posts" element={<MyClosedPosts />} />
-        <Route path="/my-contributions" element={<MyContribution />} />
-        <Route path="/edit-post/:id" element={<EditPost />} />
-        {/* <Route path="/profile" element={authUser ? <Profile /> : <Navigate to="/login" />} /> */}
-      </Routes>
+        <Route path="/signup" element={<SignUp />} />
 
-      < Toaster />
+        {/* --- PROTECTED ROUTES --- */}
+        {/* Any route inside here requires the user to be logged in */}
+        
+        <Route path="/feed" element={
+          <ProtectedRoute>
+            <Feed />
+          </ProtectedRoute>
+        } />
+
+        <Route path="/create-post" element={
+          <ProtectedRoute>
+            <CreatePost />
+          </ProtectedRoute>
+        } />
+
+        <Route path="/profile" element={
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        } />
+
+        <Route path="/post/:id" element={
+          <ProtectedRoute>
+            <PostDetails />
+          </ProtectedRoute>
+        } />
+
+        <Route path="/open-posts" element={
+          <ProtectedRoute>
+            <MyOpenPosts />
+          </ProtectedRoute>
+        } />
+
+        <Route path="/closed-posts" element={
+          <ProtectedRoute>
+            <MyClosedPosts />
+          </ProtectedRoute>
+        } />
+
+        <Route path="/my-contributions" element={
+          <ProtectedRoute>
+            <MyContribution />
+          </ProtectedRoute>
+        } />
+
+        <Route path="/edit-post/:id" element={
+          <ProtectedRoute>
+            <EditPost />
+          </ProtectedRoute>
+        } />
+
+        {/* Catch all - Redirect unknown routes to Home */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+        
+      </Routes>
+      <Toaster position="top-center" />
     </div>
   )
 }
 
-export default App
+export default App;

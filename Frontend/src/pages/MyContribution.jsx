@@ -61,7 +61,7 @@ const MyContribution = () => {
                 You haven't been accepted into any projects yet. Go to the Feed and make a request!
               </p>
               <a 
-                href="/" 
+                href="/feed" 
                 className="inline-flex items-center gap-2 mt-8 text-brand-primary font-bold hover:text-orange-400 transition-colors bg-brand-primary/10 px-6 py-3 rounded-xl border border-brand-primary/20"
               >
                 Go to Feed <ExternalLink size={18} />
