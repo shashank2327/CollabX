@@ -5,7 +5,6 @@ import {
   BookOpen, 
   CalendarCheck, 
   Users, 
-  Briefcase, 
   UserCircle, 
   LogOut,
   Plus 
@@ -19,8 +18,8 @@ const Sidebar = () => {
     { name: "Feed", icon: LayoutGrid, path: "/feed" },
     { name: "Open Posts", icon: BookOpen, path: "/open-posts" },
     { name: "Closed Posts", icon: CalendarCheck, path: "/closed-posts" },
-    { name: "My Contribution", icon: Users, path: "/contributions" },
-    { name: "Requested Post", icon: Briefcase, path: "/requests" },
+    { name: "My Contribution", icon: Users, path: "/my-contributions" },
+    // "Requested Post" removed from here
     { name: "My Profile", icon: UserCircle, path: "/profile" },
   ];
 
@@ -60,6 +59,7 @@ const Sidebar = () => {
       <nav className="flex-1 px-4 space-y-1.5 overflow-y-auto mt-2">
         {menuItems.map((item) => {
           const isActive = location.pathname === item.path;
+          const Icon = item.icon; // Component assignment for cleaner rendering
           
           return (
             <button
@@ -74,7 +74,7 @@ const Sidebar = () => {
               {/* Active Indicator Line */}
               {isActive && <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-[#006D77] rounded-r-full"></div>}
 
-              <item.icon 
+              <Icon 
                 size={22} 
                 strokeWidth={isActive ? 2.5 : 2}
                 className={`transition-colors ${isActive ? 'text-[#006D77]' : 'text-gray-400 group-hover:text-gray-600'}`} 

@@ -1,125 +1,219 @@
 import ContributionRequest from "../models/contributionRequest.model.js";
-import Contributor from "../models/contributor.model.js";
 import HelpPost from "../models/helpPost.model.js";
+import Contributor from "../models/contributor.model.js";
 
 /**
- * @desc   Send request to help on a help post
- * @route  POST /api/requests/:helpPostId
+ * 1️⃣ Create a contribution request
+ * POST /api/requests/:helpPostId
  */
-export const sendRequest = async (req, res) => {
+export const createContributionRequest = async (req, res) => {
   try {
     const { helpPostId } = req.params;
     const { message } = req.body;
 
     const helpPost = await HelpPost.findById(helpPostId);
-    if (!helpPost || helpPost.status === "closed") {
-      return res.status(404).json({ message: "Help post not available" });
+
+    if (!helpPost || helpPost.status === "CLOSED") {
+      return res.status(404).json({
+        message: "Help post not found or already closed",
+      });
     }
 
-    // Prevent owner from requesting their own post
+    // ❌ Owner cannot request their own help post
     if (helpPost.ownerId.toString() === req.user.id.toString()) {
-      return res.status(400).json({ message: "Cannot request your own post" });
+      return res.status(400).json({
+        message: "You cannot request your own help post",
+      });
     }
 
+    const existingRequest = await ContributionRequest.findOne({
+      helpPostId,
+      requesterId: req.user.id,
+    });
+
+    // ⛔ Already accepted → block
+    if (existingRequest && existingRequest.status === "accepted") {
+      return res.status(400).json({
+        message: "You are already a contributor for this help post",
+      });
+    }
+
+    // ⏳ Already pending → block
+    if (existingRequest && existingRequest.status === "pending") {
+      return res.status(400).json({
+        message: "You already have a pending request for this help post",
+      });
+    }
+
+    // 🔁 Re-request if rejected
+    if (existingRequest && existingRequest.status === "rejected") {
+      existingRequest.status = "pending";
+      existingRequest.message = message;
+      await existingRequest.save();
+
+      return res.status(200).json({
+        message: "Contribution request sent again",
+        request: existingRequest,
+      });
+    }
+
+    // ✅ Create new request
     const request = await ContributionRequest.create({
       helpPostId,
       requesterId: req.user.id,
-      message
+      message,
     });
 
-    res.status(201).json(request);
-  } catch (err) {
-    if (err.code === 11000) {
-      return res.status(409).json({
-        message: "You have already requested for this help post"
-      });
-    }
-    console.error(err);
-    res.status(500).json({ message: "Server error" });
+    return res.status(201).json({
+      message: "Contribution request sent",
+      request,
+    });
+  } catch (error) {
+    console.error("Create contribution request error:", error);
+    return res.status(500).json({
+      message: "Failed to send contribution request",
+    });
   }
 };
 
+
 /**
- * @desc   Accept contribution request (help post owner only)
- * @route  PATCH /api/requests/:requestId/accept
+ * 2️⃣ Accept a contribution request
+ * PATCH /api/requests/:requestId/accept
  */
-export const acceptRequest = async (req, res) => {
+export const acceptContributionRequest = async (req, res) => {
   try {
     const { requestId } = req.params;
 
     const request = await ContributionRequest.findById(requestId);
+
     if (!request) {
       return res.status(404).json({ message: "Request not found" });
     }
 
     const helpPost = await HelpPost.findById(request.helpPostId);
+
+    // Only owner can accept
     if (helpPost.ownerId.toString() !== req.user.id.toString()) {
-      return res.status(403).json({ message: "Not authorized" });
+      return res.status(403).json({
+        message: "You are not allowed to accept this request",
+      });
     }
 
+    if (request.status !== "pending") {
+      return res.status(400).json({
+        message: "Request is not pending",
+      });
+    }
+
+    // Mark request as accepted
     request.status = "accepted";
     await request.save();
 
-    await Contributor.create({
+    // Create contributor
+    const contributor = await Contributor.create({
       helpPostId: helpPost._id,
-      userId: request.requesterId
+      userId: request.requesterId,
     });
 
-    res.json({ message: "Request accepted" });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error" });
+    // Add contributor to help post
+    helpPost.contributors.push(contributor._id);
+    await helpPost.save();
+
+    return res.status(200).json({
+      message: "Request accepted",
+      contributor,
+    });
+  } catch (error) {
+    console.error("Accept request error:", error);
+    return res.status(500).json({
+      message: "Failed to accept request",
+    });
   }
 };
 
 /**
- * @desc   Reject contribution request (help post owner only)
- * @route  PATCH /api/requests/:requestId/reject
+ * 3️⃣ Reject a contribution request
+ * PATCH /api/requests/:requestId/reject
  */
-export const rejectRequest = async (req, res) => {
+export const rejectContributionRequest = async (req, res) => {
   try {
     const { requestId } = req.params;
 
     const request = await ContributionRequest.findById(requestId);
+
     if (!request) {
       return res.status(404).json({ message: "Request not found" });
     }
 
     const helpPost = await HelpPost.findById(request.helpPostId);
+
+    // Only owner can reject
     if (helpPost.ownerId.toString() !== req.user.id.toString()) {
-      return res.status(403).json({ message: "Not authorized" });
+      return res.status(403).json({
+        message: "You are not allowed to reject this request",
+      });
+    }
+
+    if (request.status !== "pending") {
+      return res.status(400).json({
+        message: "Request is not pending",
+      });
     }
 
     request.status = "rejected";
     await request.save();
 
-    res.json({ message: "Request rejected" });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error" });
+    return res.status(200).json({
+      message: "Request rejected",
+    });
+  } catch (error) {
+    console.error("Reject request error:", error);
+    return res.status(500).json({
+      message: "Failed to reject request",
+    });
   }
 };
 
+
 /**
- * @desc   Get all requests for a help post (owner only)
- * @route  GET /api/requests/help-post/:helpPostId
+ * 4️⃣ Get all PENDING contribution requests for a help post
+ * GET /api/requests/help-post/:helpPostId
  */
 export const getRequestsForHelpPost = async (req, res) => {
   try {
     const { helpPostId } = req.params;
 
     const helpPost = await HelpPost.findById(helpPostId);
-    if (helpPost.ownerId.toString() !== req.user.id) {
-      return res.status(403).json({ message: "Not authorized" });
+
+    if (!helpPost) {
+      return res.status(404).json({
+        message: "Help post not found",
+      });
     }
 
-    const requests = await ContributionRequest.find({ helpPostId })
-      .populate("requesterId", "name skills githubUsername")
+    // Only owner can view requests
+    if (helpPost.ownerId.toString() !== req.user.id.toString()) {
+      return res.status(403).json({
+        message: "You are not allowed to view requests for this help post",
+      });
+    }
+
+    const requests = await ContributionRequest.find({
+      helpPostId,
+      status: "pending", // ✅ ONLY pending requests
+    })
+      .populate("requesterId", "name email githubUsername avatarUrl")
       .sort({ createdAt: -1 });
 
-    res.json(requests);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error" });
+    return res.status(200).json({
+      count: requests.length,
+      requests,
+    });
+  } catch (error) {
+    console.error("Get requests for help post error:", error);
+    return res.status(500).json({
+      message: "Failed to fetch contribution requests",
+    });
   }
 };
