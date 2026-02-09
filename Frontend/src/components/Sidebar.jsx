@@ -15,7 +15,7 @@ const Sidebar = () => {
   const location = useLocation();
 
   const menuItems = [
-    { name: "Feed", icon: LayoutGrid, path: "/feed" },
+    { name: "Feed", icon: LayoutGrid, path: "/" },
     { name: "Open Posts", icon: BookOpen, path: "/open-posts" },
     { name: "Closed Posts", icon: CalendarCheck, path: "/closed-posts" },
     { name: "My Contribution", icon: Users, path: "/my-contributions" },
@@ -31,7 +31,7 @@ const Sidebar = () => {
         
         {/* LOGO BOX - Clickable & Styled */}
         <div 
-          onClick={() => navigate('/feed')}
+          onClick={() => navigate('/')}
           className="w-full bg-gradient-to-r from-[#006D77] to-[#004e56] p-4 rounded-xl shadow-lg shadow-teal-900/20 cursor-pointer group hover:scale-[1.02] transition-transform duration-200 flex items-center justify-center relative overflow-hidden"
         >
           {/* Decorative background circle */}

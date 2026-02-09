@@ -19,6 +19,7 @@ export const API_PATHS = {
     CLOSE: (id) => `/api/help-posts/${id}/close`, // Close help post
     DELETE: (id) => `/api/help-posts/${id}`,      // Delete help post
 
+    UPDATE: (id) => `/api/help-posts/${id}`, // to update a particular open post
     MY_CONTRIBUTIONS: "/api/help-posts/my/contributions", // posts where i am contributing
     MY_OPEN: "/api/help-posts/my/open",            // My open help posts
     MY_CLOSED: "/api/help-posts/my/closed",        // My closed help posts

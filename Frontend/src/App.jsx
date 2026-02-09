@@ -10,6 +10,7 @@ import PostDetails from './pages/PostDetails';
 import MyOpenPosts from './pages/MyOpenPosts';
 import MyClosedPosts from './pages/MyClosedPosts';
 import MyContribution from './pages/MyContribution';
+import EditPost from './pages/EditPost';
 
 const App = () => {
   return (
@@ -27,6 +28,7 @@ const App = () => {
         <Route path="/open-posts" element={<MyOpenPosts />} />
         <Route path="/closed-posts" element={<MyClosedPosts />} />
         <Route path="/my-contributions" element={<MyContribution />} />
+        <Route path="/edit-post/:id" element={<EditPost />} />
         {/* <Route path="/profile" element={authUser ? <Profile /> : <Navigate to="/login" />} /> */}
       </Routes>
 

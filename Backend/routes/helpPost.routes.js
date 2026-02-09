@@ -8,7 +8,8 @@ import {
   closeHelpPost,
   getOpenHelpPostsFeed,
   deleteHelpPost,
-  getMyContributedPosts
+  getMyContributedPosts,
+  updateHelpPost
 } from "../controllers/helpPost.controller.js";
 
 const router = express.Router();
@@ -20,6 +21,7 @@ router.get("/my/open", authMiddleware, getMyOpenHelpPosts);
 router.get("/my/closed", authMiddleware, getMyClosedHelpPosts);
 router.get("/my/contributions", authMiddleware, getMyContributedPosts);
 
+router.put("/:id", authMiddleware, updateHelpPost);
 router.get("/:id", getHelpPostById);
 router.patch("/:id/close", authMiddleware, closeHelpPost);
 router.delete("/:id", authMiddleware, deleteHelpPost);

@@ -278,3 +278,43 @@ export const getMyContributedPosts = async (req, res) => {
     });
   }
 };
+
+
+/**
+ * 9️⃣ Update a help post
+ * PUT /api/help-posts/:id
+ */
+export const updateHelpPost = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, description, expectedContribution, techStack, githubRepoUrl } = req.body;
+
+    const post = await HelpPost.findById(id);
+
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    // 🔒 Check Ownership
+    if (post.ownerId.toString() !== req.user.id.toString()) {
+      return res.status(403).json({ message: "Not authorized to edit this post" });
+    }
+
+    // Update fields
+    post.title = title || post.title;
+    post.description = description || post.description;
+    post.expectedContribution = expectedContribution || post.expectedContribution;
+    post.techStack = techStack || post.techStack;
+    post.githubRepoUrl = githubRepoUrl || post.githubRepoUrl;
+
+    await post.save();
+
+    return res.status(200).json({
+      message: "Post updated successfully",
+      post,
+    });
+  } catch (error) {
+    console.error("Update post error:", error);
+    return res.status(500).json({ message: "Failed to update post" });
+  }
+};
