@@ -32,7 +32,6 @@ const PostDetails = () => {
     const fetchPost = async () => {
       try {
         const response = await api.get(API_PATHS.HELP_POST.GET_ONE(id));
-        console.log(response)
         setPost(response.data.helpPost);
       } catch (error) {
         console.error("Fetch Error:", error);
@@ -45,26 +44,23 @@ const PostDetails = () => {
     fetchPost();
   }, [id, navigate]);
 
-  /// ---------------------------------------------------------
-// 🔐 ROBUST OWNER CHECK (Reactive & Safe)
-// ---------------------------------------------------------
-const isOwner = useMemo(() => {
-  if (!user || !post) return false;
+  // ---------------------------------------------------------
+  // 🔐 ROBUST OWNER CHECK (Reactive & Safe)
+  // ---------------------------------------------------------
+  const isOwner = useMemo(() => {
+    if (!user || !post) return false;
 
-  const currentUserId =
-    user._id || user.id || user?.user?._id;
+    // Handle different user object structures (populated vs flat)
+    const currentUserId = user._id || user.id || user?.user?._id;
+    const postOwnerId = post.ownerId?._id || post.ownerId;
 
-  const postOwnerId =
-    post.ownerId?._id || post.ownerId;
+    if (!currentUserId || !postOwnerId) return false;
 
-  if (!currentUserId || !postOwnerId) return false;
-
-  return String(currentUserId) === String(postOwnerId);
-}, [user, post]);
-
+    return String(currentUserId) === String(postOwnerId);
+  }, [user, post]);
   // ---------------------------------------------------------
 
-  // 2. Fetch Requests (ON CLICK ONLY)
+  // 2. Fetch Requests
   const handleGetRequests = async () => {
     setIsLoadingRequests(true);
     try {
@@ -84,7 +80,7 @@ const isOwner = useMemo(() => {
     }
   };
 
-  // 3. Handle Owner Actions (Accept/Reject)
+  // 3. Handle Owner Actions
   const handleRequestAction = async (requestId, action) => {
     try {
       if (action === 'accept') {
@@ -104,7 +100,7 @@ const isOwner = useMemo(() => {
     }
   };
 
-  // 4. Handle Visitor Action (Send Request)
+  // 4. Handle Visitor Action
   const handleSendRequest = async (message) => {
     setIsRequesting(true);
     try {
@@ -118,14 +114,14 @@ const isOwner = useMemo(() => {
     }
   };
 
-  if (isLoading) return <div className="flex h-screen items-center justify-center"><Loader2 className="animate-spin text-[#006D77]" /></div>;
+  if (isLoading) return <div className="flex h-screen items-center justify-center bg-brand-black"><Loader2 className="animate-spin text-brand-primary" /></div>;
   if (!post) return null;
 
   return (
-    <div className="flex bg-[#FAFAFA] min-h-screen">
+    <div className="flex bg-brand-black min-h-screen text-brand-text">
       <Sidebar />
       
-      {/* --- VISITOR MODAL --- */}
+      {/* --- MODALS --- */}
       {!isOwner && (
         <RequestModal 
             isOpen={isRequestModalOpen}
@@ -136,7 +132,6 @@ const isOwner = useMemo(() => {
         />
       )}
 
-      {/* --- OWNER MODAL (Requests List) --- */}
       {isOwner && (
         <IncomingRequestsModal 
             isOpen={isReviewModalOpen}
@@ -147,16 +142,16 @@ const isOwner = useMemo(() => {
         />
       )}
 
-      <main className="ml-64 flex-1 p-8 overflow-y-auto h-screen relative">
-        <div className="max-w-5xl mx-auto pb-24">
+      <main className="ml-64 flex-1 p-8 overflow-y-auto h-screen relative bg-brand-black">
+        <div className="max-w-5xl mx-auto pb-24 relative z-10">
           
-          <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-gray-500 hover:text-[#006D77] mb-6 font-medium">
+          <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-brand-muted hover:text-brand-primary mb-6 font-medium transition-colors">
             <ArrowLeft size={20} /> Back
           </button>
 
           {/* Owner Banner */}
           {isOwner && (
-            <div className="bg-teal-50 border border-teal-200 text-teal-800 px-4 py-2 rounded-lg mb-6 flex items-center gap-2">
+            <div className="bg-brand-primary/10 border border-brand-primary/20 text-brand-primary px-4 py-2 rounded-lg mb-6 flex items-center gap-2">
               <CheckCircle2 size={16} /> 
               <span className="text-sm font-semibold">You are the owner of this post.</span>
             </div>
@@ -166,46 +161,51 @@ const isOwner = useMemo(() => {
             
             {/* LEFT COLUMN: Post Content */}
             <div className="lg:col-span-2 space-y-8">
-              <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden p-8">
+              <div className="bg-brand-graphite rounded-3xl border border-brand-border shadow-lg overflow-hidden p-8">
+                
+                {/* Status Badge */}
                 <div className="flex items-center justify-between mb-4">
-                     <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase ${
-                        post.status === 'OPEN' ? 'bg-[#E6F0F1] text-[#006D77]' : 'bg-gray-100 text-gray-500'
+                     <span className={`px-3 py-1 rounded-md text-xs font-bold uppercase border ${
+                        post.status === 'OPEN' 
+                        ? 'bg-orange-500/10 text-orange-400 border-orange-500/20' 
+                        : 'bg-zinc-800 text-zinc-500 border-zinc-700'
                      }`}>
                         {post.status}
                      </span>
                 </div>
 
-                <h1 className="text-3xl font-bold text-gray-900 mb-4">{post.title}</h1>
-                <p className="text-gray-600 whitespace-pre-line mb-6 leading-relaxed">{post.description}</p>
+                <h1 className="text-3xl font-extrabold text-white mb-4">{post.title}</h1>
+                <p className="text-brand-muted whitespace-pre-line mb-8 leading-relaxed text-lg">{post.description}</p>
                 
                 {post.expectedContribution && (
-                    <div className="mb-6 bg-gray-50 p-4 rounded-xl border border-gray-100">
-                        <h4 className="font-bold text-gray-800 mb-2 flex items-center gap-2">
-                            <CheckCircle2 size={16} className="text-[#006D77]" /> Expected Contribution
+                    <div className="mb-6 bg-black/40 p-5 rounded-2xl border border-brand-border">
+                        <h4 className="font-bold text-white mb-2 flex items-center gap-2">
+                            <CheckCircle2 size={18} className="text-brand-primary" /> Expected Contribution
                         </h4>
-                        <p className="text-sm text-gray-600">{post.expectedContribution}</p>
+                        <p className="text-sm text-brand-muted">{post.expectedContribution}</p>
                     </div>
                 )}
 
+                {/* Tech Stack */}
                 <div className="flex flex-wrap gap-2 mb-8">
                     {post.techStack.map(t => (
-                        <span key={t} className="px-3 py-1.5 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 shadow-sm">
-                            {t}
+                        <span key={t} className="px-3 py-1.5 bg-black/40 border border-brand-border rounded-lg text-sm font-medium text-gray-300 flex items-center gap-1.5">
+                            <Code2 size={14} className="text-brand-primary"/> {t}
                         </span>
                     ))}
                 </div>
 
                 {/* Owner Info Footer */}
-                <div className="flex items-center justify-between pt-6 border-t border-gray-100">
+                <div className="flex items-center justify-between pt-6 border-t border-brand-border">
                     <div className="flex items-center gap-3">
-                        <img src={post.ownerId?.avatarUrl || "https://via.placeholder.com/40"} className="w-10 h-10 rounded-full bg-gray-100 object-cover" alt="" />
+                        <img src={post.ownerId?.avatarUrl || "https://via.placeholder.com/40"} className="w-10 h-10 rounded-full bg-black border border-brand-border object-cover" alt="" />
                         <div>
-                            <p className="font-bold text-gray-900 text-sm">{post.ownerId?.name || "Unknown"}</p>
-                            <p className="text-xs text-gray-500">Owner</p>
+                            <p className="font-bold text-white text-sm">{post.ownerId?.name || "Unknown"}</p>
+                            <p className="text-xs text-brand-muted">Owner</p>
                         </div>
                     </div>
                     {post.githubRepoUrl && (
-                        <a href={post.githubRepoUrl} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-[#006D77] font-semibold hover:underline text-sm">
+                        <a href={post.githubRepoUrl} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-brand-primary font-semibold hover:underline text-sm">
                             <Github size={16} /> Repository
                         </a>
                     )}
@@ -213,9 +213,9 @@ const isOwner = useMemo(() => {
               </div>
 
                {/* CONTRIBUTORS SECTION */}
-               <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-8">
-                  <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
-                    <Users size={20} className="text-[#006D77]" />
+               <div className="bg-brand-graphite rounded-3xl border border-brand-border shadow-sm p-8">
+                  <h3 className="text-lg font-bold text-white mb-6 flex items-center gap-2">
+                    <Users size={20} className="text-brand-primary" />
                     Project Contributors ({post.contributors?.length || 0})
                   </h3>
                   
@@ -224,40 +224,40 @@ const isOwner = useMemo(() => {
                       {post.contributors.map((contributor) => {
                          const userObj = contributor.userId || contributor; 
                          return (
-                           <div key={contributor._id} className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 border border-gray-100">
-                             <img src={userObj.avatarUrl || "https://via.placeholder.com/40"} className="w-10 h-10 rounded-full bg-white object-cover" alt="" />
+                           <div key={contributor._id} className="flex items-center gap-3 p-3 rounded-xl bg-black/40 border border-brand-border">
+                             <img src={userObj.avatarUrl || "https://via.placeholder.com/40"} className="w-10 h-10 rounded-full bg-black border border-brand-border object-cover" alt="" />
                              <div className="overflow-hidden">
-                               <p className="font-semibold text-gray-900 truncate text-sm">{userObj.name}</p>
-                               <p className="text-xs text-gray-500 truncate">@{userObj.githubUsername}</p>
+                               <p className="font-semibold text-white truncate text-sm">{userObj.name}</p>
+                               <p className="text-xs text-brand-muted truncate">@{userObj.githubUsername}</p>
                              </div>
                            </div>
                          );
                       })}
                     </div>
                   ) : (
-                    <p className="text-gray-400 text-sm italic">No contributors yet.</p>
+                    <p className="text-brand-muted text-sm italic">No contributors yet.</p>
                   )}
                </div>
             </div>
 
-            {/* RIGHT COLUMN: Sidebar */}
+            {/* RIGHT COLUMN: Sidebar Actions */}
             <div className="space-y-6">
               
-              {/* --- SCENARIO 1: I AM THE OWNER --- */}
+              {/* --- OWNER VIEW --- */}
               {isOwner ? (
-                <div className="bg-white rounded-2xl border border-gray-200 p-6 text-center shadow-sm sticky top-8 animate-fadeIn">
-                  <div className="w-12 h-12 bg-teal-50 rounded-full flex items-center justify-center mx-auto mb-4 text-[#006D77]">
+                <div className="bg-brand-graphite rounded-2xl border border-brand-border p-6 text-center shadow-lg sticky top-8 animate-fadeIn">
+                  <div className="w-12 h-12 bg-brand-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 text-brand-primary border border-brand-primary/20">
                     <MessageSquare size={24} />
                   </div>
-                  <h3 className="font-bold text-gray-900 mb-2">Manage Requests</h3>
-                  <p className="text-sm text-gray-500 mb-6">
+                  <h3 className="font-bold text-white mb-2">Manage Requests</h3>
+                  <p className="text-sm text-brand-muted mb-6">
                     See who wants to contribute to your project.
                   </p>
                   
                   <button
                     onClick={handleGetRequests}
                     disabled={isLoadingRequests}
-                    className="w-full bg-[#006D77] hover:bg-[#00555D] text-white py-3 rounded-xl font-bold shadow-lg transition-all transform hover:-translate-y-0.5 relative flex items-center justify-center gap-2 disabled:opacity-70"
+                    className="w-full bg-brand-primary hover:bg-orange-600 text-white py-3 rounded-xl font-bold shadow-lg shadow-orange-500/20 transition-all transform hover:-translate-y-0.5 relative flex items-center justify-center gap-2 disabled:opacity-70"
                   >
                     {isLoadingRequests ? (
                       <>
@@ -269,17 +269,17 @@ const isOwner = useMemo(() => {
                   </button>
                 </div>
               ) : (
-                /* --- SCENARIO 2: I AM A VISITOR --- */
+                /* --- VISITOR VIEW --- */
                 post.status === 'OPEN' && (
-                 <div className="bg-white rounded-2xl border border-gray-200 p-6 text-center shadow-sm sticky top-8">
-                    <div className="w-12 h-12 bg-teal-50 rounded-full flex items-center justify-center mx-auto mb-4 text-[#006D77]">
+                 <div className="bg-brand-graphite rounded-2xl border border-brand-border p-6 text-center shadow-lg sticky top-8">
+                    <div className="w-12 h-12 bg-brand-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 text-brand-primary border border-brand-primary/20">
                         <Send size={24} />
                     </div>
-                    <h3 className="font-bold text-gray-900 mb-2">Interested in helping?</h3>
-                    <p className="text-sm text-gray-500 mb-6">Send a request to the project owner to join the team.</p>
+                    <h3 className="font-bold text-white mb-2">Interested in helping?</h3>
+                    <p className="text-sm text-brand-muted mb-6">Send a request to the project owner to join the team.</p>
                     <button
                       onClick={() => setIsRequestModalOpen(true)}
-                      className="w-full bg-[#006D77] hover:bg-[#00555D] text-white py-3 rounded-xl font-bold shadow-lg transition-all transform hover:-translate-y-0.5"
+                      className="w-full bg-brand-primary hover:bg-orange-600 text-white py-3 rounded-xl font-bold shadow-lg shadow-orange-500/20 transition-all transform hover:-translate-y-0.5"
                     >
                       Request to Contribute
                     </button>

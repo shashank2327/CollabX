@@ -11,7 +11,8 @@ import {
   FileText, 
   Code2, 
   HelpCircle, 
-  Send 
+  Send,
+  Sparkles
 } from 'lucide-react';
 
 const CreatePost = () => {
@@ -26,7 +27,7 @@ const CreatePost = () => {
     expectedContribution: '',
   });
 
-  // Tech Stack State (Array of strings)
+  // Tech Stack State
   const [techStack, setTechStack] = useState([]);
   const [techInput, setTechInput] = useState('');
 
@@ -67,7 +68,7 @@ const CreatePost = () => {
       const payload = {
         title: formData.title,
         description: formData.description,
-        techStack: techStack, // Send array directly
+        techStack: techStack,
         githubRepoUrl: formData.githubRepoUrl,
         expectedContribution: formData.expectedContribution,
       };
@@ -76,8 +77,7 @@ const CreatePost = () => {
 
       if (response.data) {
         toast.success('Help Post created successfully!');
-        // Redirect to Open Posts or Feed after creation
-        navigate('/'); 
+        navigate('/feed'); 
       }
     } catch (error) {
       console.error('Create Post Error:', error);
@@ -89,28 +89,33 @@ const CreatePost = () => {
   };
 
   return (
-    <div className="flex bg-gray-50 min-h-screen">
+    <div className="flex bg-brand-black min-h-screen text-brand-text">
       <Sidebar />
       
-      <main className="ml-64 flex-1 p-8 overflow-y-auto h-screen">
-        <div className="max-w-3xl mx-auto">
+      <main className="ml-64 flex-1 p-8 overflow-y-auto h-screen bg-brand-black relative">
+         {/* Subtle Gradient for Depth */}
+         <div className="absolute top-0 right-0 w-96 h-96 bg-brand-primary/5 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div className="max-w-3xl mx-auto relative z-10">
           
           {/* Header */}
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900">Create a Request</h1>
-            <p className="text-gray-500 mt-2">
+            <h1 className="text-3xl font-extrabold text-white flex items-center gap-2">
+              Create a Request <Sparkles className="text-brand-primary" size={24} />
+            </h1>
+            <p className="text-brand-muted mt-2 text-lg">
               Ask for help, find contributors, or start a new collaboration.
             </p>
           </div>
 
           {/* Form Card */}
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden p-8">
+          <div className="bg-brand-graphite rounded-2xl shadow-xl border border-brand-border overflow-hidden p-8">
             <form onSubmit={handleSubmit} className="space-y-6">
               
               {/* Title */}
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                  <Type size={18} className="text-[#006D77]" />
+                <label className="text-sm font-semibold text-gray-300 flex items-center gap-2">
+                  <Type size={18} className="text-brand-primary" />
                   Project Title <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -119,28 +124,28 @@ const CreatePost = () => {
                   value={formData.title}
                   onChange={handleChange}
                   placeholder="e.g. AI-Powered Chatbot"
-                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-[#006D77] focus:border-transparent outline-none transition-all"
+                  className="w-full px-4 py-3.5 rounded-xl bg-black/40 border border-brand-border text-white placeholder-gray-500 focus:ring-1 focus:ring-brand-primary focus:border-brand-primary outline-none transition-all"
                   required
                 />
               </div>
 
               {/* Tech Stack (Tag Input) */}
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                  <Code2 size={18} className="text-[#006D77]" />
+                <label className="text-sm font-semibold text-gray-300 flex items-center gap-2">
+                  <Code2 size={18} className="text-brand-primary" />
                   Tech Stack <span className="text-red-500">*</span>
                 </label>
-                <div className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white focus-within:ring-2 focus-within:ring-[#006D77] flex flex-wrap gap-2 min-h-[56px]">
+                <div className="w-full px-4 py-3 rounded-xl border border-brand-border bg-black/40 focus-within:ring-1 focus-within:ring-brand-primary focus-within:border-brand-primary flex flex-wrap gap-2 min-h-[56px] items-center transition-all">
                   {techStack.map((tech, index) => (
                     <span
                       key={index}
-                      className="bg-[#E6F0F1] text-[#006D77] px-3 py-1.5 rounded-lg text-sm font-medium flex items-center gap-2 animate-fadeIn"
+                      className="bg-brand-primary/10 text-brand-primary border border-brand-primary/20 px-3 py-1.5 rounded-lg text-sm font-medium flex items-center gap-2 animate-fadeIn"
                     >
                       {tech}
                       <button
                         type="button"
                         onClick={() => removeTech(tech)}
-                        className="hover:text-red-600 transition-colors"
+                        className="hover:text-red-400 transition-colors"
                       >
                         <X size={14} />
                       </button>
@@ -152,18 +157,18 @@ const CreatePost = () => {
                     onChange={(e) => setTechInput(e.target.value)}
                     onKeyDown={handleTechKeyDown}
                     placeholder={techStack.length === 0 ? "Type tech (e.g. React) and press Enter" : "Add more..."}
-                    className="flex-1 min-w-[150px] outline-none bg-transparent text-sm py-1"
+                    className="flex-1 min-w-[150px] outline-none bg-transparent text-white text-sm py-1 placeholder-gray-500"
                   />
                 </div>
                 <p className="text-xs text-gray-500 ml-1">
-                  Press <b>Enter</b> to add a tag.
+                  Press <kbd className="font-mono bg-zinc-800 px-1 rounded text-gray-400">Enter</kbd> to add a tag.
                 </p>
               </div>
 
               {/* Description */}
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                  <FileText size={18} className="text-[#006D77]" />
+                <label className="text-sm font-semibold text-gray-300 flex items-center gap-2">
+                  <FileText size={18} className="text-brand-primary" />
                   Project Description <span className="text-red-500">*</span>
                 </label>
                 <textarea
@@ -172,15 +177,15 @@ const CreatePost = () => {
                   value={formData.description}
                   onChange={handleChange}
                   placeholder="Describe your project, the problem it solves, and its current status..."
-                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-[#006D77] focus:border-transparent outline-none transition-all resize-none"
+                  className="w-full px-4 py-3.5 rounded-xl bg-black/40 border border-brand-border text-white placeholder-gray-500 focus:ring-1 focus:ring-brand-primary focus:border-brand-primary outline-none transition-all resize-none"
                   required
                 />
               </div>
 
               {/* Expected Contribution */}
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                  <HelpCircle size={18} className="text-[#006D77]" />
+                <label className="text-sm font-semibold text-gray-300 flex items-center gap-2">
+                  <HelpCircle size={18} className="text-brand-primary" />
                   Expected Contribution
                 </label>
                 <textarea
@@ -189,14 +194,14 @@ const CreatePost = () => {
                   value={formData.expectedContribution}
                   onChange={handleChange}
                   placeholder="What specific help do you need? (e.g. Fix bug #12, Design Landing Page)"
-                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-[#006D77] focus:border-transparent outline-none transition-all resize-none"
+                  className="w-full px-4 py-3.5 rounded-xl bg-black/40 border border-brand-border text-white placeholder-gray-500 focus:ring-1 focus:ring-brand-primary focus:border-brand-primary outline-none transition-all resize-none"
                 />
               </div>
 
               {/* GitHub Repo URL */}
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                  <Github size={18} className="text-[#006D77]" />
+                <label className="text-sm font-semibold text-gray-300 flex items-center gap-2">
+                  <Github size={18} className="text-brand-primary" />
                   GitHub Repository URL
                 </label>
                 <input
@@ -205,22 +210,22 @@ const CreatePost = () => {
                   value={formData.githubRepoUrl}
                   onChange={handleChange}
                   placeholder="https://github.com/username/repo"
-                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-[#006D77] focus:border-transparent outline-none transition-all"
+                  className="w-full px-4 py-3.5 rounded-xl bg-black/40 border border-brand-border text-white placeholder-gray-500 focus:ring-1 focus:ring-brand-primary focus:border-brand-primary outline-none transition-all"
                 />
               </div>
 
               {/* Submit Button */}
-              <div className="pt-4">
+              <div className="pt-6 border-t border-brand-border mt-4">
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full bg-[#006D77] hover:bg-[#00555D] text-white font-bold py-4 rounded-xl shadow-lg shadow-teal-900/10 transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed transform active:scale-[0.99]"
+                  className="w-full bg-brand-primary hover:bg-orange-600 text-white font-bold py-4 rounded-xl shadow-lg shadow-orange-500/20 transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed transform active:scale-[0.99] group"
                 >
                   {isLoading ? (
                     'Creating...'
                   ) : (
                     <>
-                      <Send size={20} /> Post Request
+                      <Send size={20} className="group-hover:translate-x-1 transition-transform" /> Post Request
                     </>
                   )}
                 </button>

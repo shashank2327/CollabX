@@ -11,6 +11,7 @@ import MyOpenPosts from './pages/MyOpenPosts';
 import MyClosedPosts from './pages/MyClosedPosts';
 import MyContribution from './pages/MyContribution';
 import EditPost from './pages/EditPost';
+import LandingPage from './pages/LandingPage';
 
 const App = () => {
   return (
@@ -19,7 +20,8 @@ const App = () => {
         {/* <Route path="/" element={authUser ? <Feed /> : <Navigate to="/login" />} />
         <Route path="/signup" element={!authUser ? <SignUp /> : <Navigate to="/" />} /> */}
         {/* <Route path="/login" element={!authUser ? <Login /> : <Navigate to="/" />} /> */}
-        <Route path="/" element={<Feed />} />
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/feed" element={<Feed />} />
         <Route path="/create-post" element={<CreatePost />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/login" element={<Login />} />

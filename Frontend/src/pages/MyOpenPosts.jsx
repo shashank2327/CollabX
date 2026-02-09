@@ -5,7 +5,7 @@ import HelpPostCard from '../components/HelpPostCard';
 import api from '../lib/axios';
 import { API_PATHS } from '../lib/apiPath';
 import { UserContext } from '../context/userContext';
-import { Loader2, Trash2, CheckCircle, Pencil } from 'lucide-react';
+import { Loader2, Trash2, CheckCircle, Pencil, Search } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const MyOpenPosts = () => {
@@ -61,28 +61,31 @@ const MyOpenPosts = () => {
   };
 
   return (
-    <div className="flex bg-[#FAFAFA] min-h-screen">
+    <div className="flex bg-brand-black min-h-screen text-brand-text">
       <Sidebar />
       
-      <main className="ml-64 flex-1 p-8 overflow-y-auto h-screen">
+      <main className="ml-64 flex-1 p-8 overflow-y-auto h-screen bg-brand-black">
         <div className="max-w-5xl mx-auto">
           
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900">My Open Posts</h1>
-            <p className="text-gray-500 mt-1">Manage your active requests and collaborations.</p>
+            <h1 className="text-3xl font-bold text-white">My Open Posts</h1>
+            <p className="text-brand-muted mt-1">Manage your active requests and collaborations.</p>
           </div>
 
           {isLoading ? (
             <div className="flex justify-center py-20">
-              <Loader2 size={40} className="text-[#006D77] animate-spin" />
+              <Loader2 size={40} className="text-brand-primary animate-spin" />
             </div>
           ) : posts.length === 0 ? (
-            <div className="text-center py-16 bg-white rounded-2xl border border-dashed border-gray-300">
-              <h3 className="text-xl font-bold text-gray-700">No open posts</h3>
-              <p className="text-gray-500 mt-2">You haven't created any requests yet.</p>
+            <div className="text-center py-16 bg-brand-graphite rounded-3xl border border-dashed border-brand-border">
+               <div className="w-16 h-16 bg-brand-black rounded-full flex items-center justify-center mx-auto mb-4 border border-brand-border">
+                  <Search className="text-brand-muted" size={32} />
+              </div>
+              <h3 className="text-xl font-bold text-white">No open posts</h3>
+              <p className="text-brand-muted mt-2">You haven't created any requests yet.</p>
               <button 
                 onClick={() => navigate('/create-post')}
-                className="mt-4 px-6 py-2 bg-[#006D77] text-white rounded-lg font-semibold hover:bg-[#00555D] transition-colors"
+                className="mt-6 px-6 py-2.5 bg-brand-primary text-white rounded-xl font-bold hover:bg-orange-600 transition-colors shadow-lg shadow-orange-500/20"
               >
                 Create New Post
               </button>
@@ -91,7 +94,7 @@ const MyOpenPosts = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {posts.map((post) => {
                 
-                // FIX: Inject current user as owner to prevent "Unknown User"
+                // Inject current user as owner to prevent "Unknown User"
                 const postWithUser = {
                   ...post,
                   ownerId: user 
@@ -104,13 +107,13 @@ const MyOpenPosts = () => {
                       <HelpPostCard post={postWithUser} />
                     </div>
                     
-                    {/* Action Buttons */}
+                    {/* Action Buttons - Dark Mode Styled */}
                     <div className="flex gap-2">
                       
                       {/* EDIT BUTTON */}
                       <button
                         onClick={() => navigate(`/edit-post/${post._id}`)}
-                        className="flex items-center justify-center px-4 bg-blue-50 text-blue-600 hover:bg-blue-100 py-2.5 rounded-xl transition-colors border border-blue-200"
+                        className="flex items-center justify-center px-4 bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 py-2.5 rounded-xl transition-colors border border-blue-500/20"
                         title="Edit Post"
                       >
                         <Pencil size={18} />
@@ -119,7 +122,7 @@ const MyOpenPosts = () => {
                       {/* CLOSE BUTTON */}
                       <button
                         onClick={() => handleClosePost(post._id)}
-                        className="flex-1 flex items-center justify-center gap-2 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 py-2.5 rounded-xl text-sm font-semibold transition-colors border border-emerald-200"
+                        className="flex-1 flex items-center justify-center gap-2 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 py-2.5 rounded-xl text-sm font-semibold transition-colors border border-emerald-500/20"
                       >
                         <CheckCircle size={18} /> Close
                       </button>
@@ -127,7 +130,7 @@ const MyOpenPosts = () => {
                       {/* DELETE BUTTON */}
                       <button
                         onClick={() => handleDeletePost(post._id)}
-                        className="flex items-center justify-center px-4 bg-red-50 text-red-600 hover:bg-red-100 py-2.5 rounded-xl transition-colors border border-red-200"
+                        className="flex items-center justify-center px-4 bg-red-500/10 text-red-400 hover:bg-red-500/20 py-2.5 rounded-xl transition-colors border border-red-500/20"
                         title="Delete Post"
                       >
                         <Trash2 size={18} />

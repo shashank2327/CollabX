@@ -15,32 +15,32 @@ const Sidebar = () => {
   const location = useLocation();
 
   const menuItems = [
-    { name: "Feed", icon: LayoutGrid, path: "/" },
+    { name: "Feed", icon: LayoutGrid, path: "/feed" },
     { name: "Open Posts", icon: BookOpen, path: "/open-posts" },
     { name: "Closed Posts", icon: CalendarCheck, path: "/closed-posts" },
     { name: "My Contribution", icon: Users, path: "/my-contributions" },
-    // "Requested Post" removed from here
     { name: "My Profile", icon: UserCircle, path: "/profile" },
   ];
 
   return (
-    <aside className="h-screen w-64 bg-white border-r border-gray-200 flex flex-col fixed left-0 top-0 z-50 shadow-sm">
+    <aside className="h-screen w-64 bg-brand-graphite border-r border-brand-border flex flex-col fixed left-0 top-0 z-50">
       
       {/* HEADER SECTION (Logo + Create Post) */}
-      <div className="p-5 flex flex-col gap-4">
+      <div className="p-6">
         
-        {/* LOGO BOX - Clickable & Styled */}
+        {/* LOGO - Clickable */}
         <div 
           onClick={() => navigate('/')}
-          className="w-full bg-gradient-to-r from-[#006D77] to-[#004e56] p-4 rounded-xl shadow-lg shadow-teal-900/20 cursor-pointer group hover:scale-[1.02] transition-transform duration-200 flex items-center justify-center relative overflow-hidden"
+          className="flex items-center gap-2 cursor-pointer mb-8 group"
         >
-          {/* Decorative background circle */}
-          <div className="absolute -right-4 -top-4 w-16 h-16 bg-white/10 rounded-full blur-xl"></div>
-          
-          <h1 className="text-2xl font-extrabold text-white tracking-tight flex items-center gap-1 z-10">
-            Collab<span className="text-[#4FD1C5]">X</span>
+          {/* Logo Icon */}
+          <div className="w-8 h-8 rounded-lg bg-brand-gradient flex items-center justify-center shadow-glow group-hover:scale-105 transition-transform duration-200">
+            <span className="text-white font-bold text-lg">C</span>
+          </div>
+          <h1 className="text-xl font-bold text-white tracking-tight">
+            Collab<span className="text-brand-primary">X</span>
           </h1>
-          <span className="absolute top-2 right-2 bg-white/20 text-white text-[9px] px-1.5 py-0.5 rounded-[4px] uppercase font-bold tracking-wider backdrop-blur-sm border border-white/10">
+          <span className="ml-auto bg-brand-primary/10 text-brand-primary text-[9px] px-1.5 py-0.5 rounded border border-brand-primary/20 uppercase font-bold tracking-wider">
             Beta
           </span>
         </div>
@@ -48,51 +48,52 @@ const Sidebar = () => {
         {/* CREATE POST BUTTON */}
         <button 
           onClick={() => navigate('/create-post')}
-          className="w-full flex items-center justify-center gap-2 bg-white border-2 border-[#006D77] text-[#006D77] hover:bg-[#006D77] hover:text-white py-3 rounded-xl transition-all duration-300 font-bold shadow-sm hover:shadow-md group"
+          className="w-full flex items-center justify-center gap-2 bg-transparent border border-brand-primary text-brand-primary hover:bg-brand-primary hover:text-white py-3 rounded-xl transition-all duration-300 font-bold group shadow-[0_0_10px_rgba(249,115,22,0.1)] hover:shadow-glow"
         >
           <Plus size={20} className="group-hover:rotate-90 transition-transform duration-300" />
-          <span>Create Post</span>
+          <span>New Project</span>
         </button>
       </div>
 
       {/* Navigation Menu */}
-      <nav className="flex-1 px-4 space-y-1.5 overflow-y-auto mt-2">
+      <nav className="flex-1 px-4 space-y-2 overflow-y-auto">
         {menuItems.map((item) => {
           const isActive = location.pathname === item.path;
-          const Icon = item.icon; // Component assignment for cleaner rendering
+          const Icon = item.icon;
           
           return (
             <button
               key={item.name}
               onClick={() => navigate(item.path)}
-              className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-200 group relative overflow-hidden
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group relative
                 ${isActive 
-                  ? 'bg-[#E6F0F1] text-[#006D77] font-bold shadow-sm' 
-                  : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900 font-medium'
+                  ? 'bg-brand-gradient text-white shadow-glow font-semibold' 
+                  : 'text-brand-muted hover:bg-brand-border hover:text-white'
                 }`}
             >
-              {/* Active Indicator Line */}
-              {isActive && <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-[#006D77] rounded-r-full"></div>}
-
               <Icon 
-                size={22} 
-                strokeWidth={isActive ? 2.5 : 2}
-                className={`transition-colors ${isActive ? 'text-[#006D77]' : 'text-gray-400 group-hover:text-gray-600'}`} 
+                size={20} 
+                className={`transition-colors ${isActive ? 'text-white' : 'text-gray-500 group-hover:text-white'}`} 
               />
               <span className="text-sm">{item.name}</span>
+              
+              {/* Active Dot Indicator (Optional Polish) */}
+              {isActive && (
+                <div className="absolute right-4 w-1.5 h-1.5 rounded-full bg-white animate-pulse"></div>
+              )}
             </button>
           );
         })}
       </nav>
 
       {/* Footer / Logout */}
-      <div className="p-4 border-t border-gray-100">
+      <div className="p-4 border-t border-brand-border">
         <button 
           onClick={() => navigate('/login')}
-          className="w-full flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all duration-200 group"
+          className="w-full flex items-center gap-3 px-4 py-3 text-brand-muted hover:text-red-400 hover:bg-red-500/10 rounded-xl transition-all duration-200 group"
         >
           <LogOut size={20} className="group-hover:-translate-x-1 transition-transform" />
-          <span className="text-sm font-semibold">Log out</span>
+          <span className="text-sm font-medium">Log out</span>
         </button>
       </div>
 

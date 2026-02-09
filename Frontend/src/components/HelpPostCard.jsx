@@ -5,7 +5,8 @@ import {
   Github, 
   Clock, 
   User, 
-  ArrowRight 
+  ArrowRight,
+  Code2
 } from 'lucide-react';
 
 const HelpPostCard = ({ post }) => {
@@ -25,36 +26,39 @@ const HelpPostCard = ({ post }) => {
     ownerId, 
   } = post;
 
-  // Handle owner data (it might be populated or just an ID depending on backend)
-  // The Feed API usually populates it.
+  // Handle owner data
   const ownerName = ownerId?.name || "Unknown User";
   const ownerAvatar = ownerId?.avatarUrl;
-  const ownerBio = ownerId?.bio?.substring(0, 30) || "Developer"; // Short bio or placeholder
+  const ownerUsername = ownerId?.githubUsername || "developer";
 
   const handleViewDetails = () => {
     navigate(`/post/${_id}`);
   };
 
-  // Format Date (e.g. "2 days ago")
+  // Format Date
   const dateStr = createdAt 
     ? formatDistanceToNow(new Date(createdAt), { addSuffix: true })
     : 'Just now';
 
   return (
-    <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-md transition-all duration-300 flex flex-col h-full relative overflow-hidden group">
+    <div 
+      onClick={handleViewDetails}
+      // bg-brand-graphite sets the card color to Dark Gray (#18181B)
+      className="group relative bg-brand-graphite rounded-2xl p-6 border border-brand-border cursor-pointer transition-all duration-300 hover:shadow-glow hover:-translate-y-1 hover:border-brand-primary/30 flex flex-col h-full overflow-hidden"
+    >
       
-      {/* Top Border Accent */}
-      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#006D77] to-[#83C5BE] opacity-0 group-hover:opacity-100 transition-opacity"></div>
+      {/* Background Gradient Blob (Subtle) */}
+      <div className="absolute -right-10 -top-10 w-32 h-32 bg-brand-primary/5 rounded-full blur-3xl group-hover:bg-brand-primary/10 transition-all duration-500 pointer-events-none"></div>
 
       {/* --- HEADER --- */}
-      <div className="flex justify-between items-start mb-4">
+      <div className="flex justify-between items-start mb-5 relative z-10">
         <div className="flex items-center gap-3">
           {/* Avatar */}
-          <div className="w-10 h-10 rounded-full bg-gray-100 border border-gray-200 overflow-hidden flex-shrink-0">
+          <div className="w-10 h-10 rounded-full bg-black border border-brand-border overflow-hidden flex-shrink-0">
             {ownerAvatar ? (
               <img src={ownerAvatar} alt={ownerName} className="w-full h-full object-cover" />
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-gray-400">
+              <div className="w-full h-full flex items-center justify-center text-gray-500">
                 <User size={20} />
               </div>
             )}
@@ -62,33 +66,32 @@ const HelpPostCard = ({ post }) => {
           
           {/* User Info */}
           <div>
-            <h4 className="text-sm font-bold text-gray-900 leading-none">{ownerName}</h4>
-            <span className="text-xs text-gray-500 mt-1 block">{ownerBio}...</span>
+            <h4 className="text-sm font-bold text-white leading-none group-hover:text-brand-primary transition-colors">
+              {ownerName}
+            </h4>
+            <span className="text-xs text-brand-muted mt-1 block">@{ownerUsername}</span>
           </div>
         </div>
 
         {/* Status Badge */}
-        <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wide uppercase ${
+        <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold tracking-wide uppercase border ${
           status === 'OPEN' 
-            ? 'bg-[#E6F0F1] text-[#006D77]' 
-            : 'bg-gray-100 text-gray-500'
+            ? 'bg-orange-500/10 text-orange-400 border-orange-500/20' 
+            : 'bg-zinc-800 text-zinc-500 border-zinc-700'
         }`}>
           {status}
         </span>
       </div>
 
       {/* --- BODY --- */}
-      <div className="flex-1">
+      <div className="flex-1 relative z-10">
         {/* Title */}
-        <h3 
-          onClick={handleViewDetails}
-          className="text-lg font-bold text-gray-900 mb-2 cursor-pointer hover:text-[#006D77] transition-colors line-clamp-1"
-        >
+        <h3 className="text-lg font-bold text-white mb-2 line-clamp-1">
           {title}
         </h3>
 
         {/* Description */}
-        <p className="text-gray-600 text-sm leading-relaxed mb-4 line-clamp-2">
+        <p className="text-brand-muted text-sm leading-relaxed mb-5 line-clamp-2">
           {description}
         </p>
 
@@ -97,23 +100,25 @@ const HelpPostCard = ({ post }) => {
           {techStack.slice(0, 3).map((tech, index) => (
             <span 
               key={index} 
-              className="px-2.5 py-1 rounded-md bg-gray-50 border border-gray-100 text-gray-600 text-xs font-medium"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/40 text-gray-300 text-xs font-medium border border-brand-border group-hover:border-brand-primary/30 transition-colors"
             >
-              {tech}
+              <Code2 size={12} className="text-brand-primary"/> {tech}
             </span>
           ))}
           {techStack.length > 3 && (
-            <span className="text-xs text-gray-400 self-center">+{techStack.length - 3} more</span>
+            <span className="px-2 py-1 text-xs text-brand-muted font-medium self-center">
+              +{techStack.length - 3}
+            </span>
           )}
         </div>
       </div>
 
       {/* --- FOOTER --- */}
-      <div className="pt-4 border-t border-gray-50 flex items-center justify-between mt-auto">
+      <div className="pt-4 border-t border-brand-border flex items-center justify-between mt-auto relative z-10">
         
         {/* Left: Date & GitHub */}
-        <div className="flex items-center gap-4 text-xs text-gray-400">
-          <span className="flex items-center gap-1">
+        <div className="flex items-center gap-4 text-xs text-brand-muted font-medium">
+          <span className="flex items-center gap-1.5">
             <Clock size={14} /> {dateStr}
           </span>
           {githubRepoUrl && (
@@ -121,7 +126,7 @@ const HelpPostCard = ({ post }) => {
               href={githubRepoUrl}
               target="_blank"
               rel="noreferrer"
-              className="hover:text-[#006D77] transition-colors flex items-center gap-1"
+              className="hover:text-brand-primary transition-colors flex items-center gap-1.5 z-20"
               onClick={(e) => e.stopPropagation()}
             >
               <Github size={14} /> Repo
@@ -129,14 +134,10 @@ const HelpPostCard = ({ post }) => {
           )}
         </div>
 
-        {/* Right: View Button */}
-        <button 
-          onClick={handleViewDetails}
-          className="flex items-center gap-1 text-sm font-bold text-[#006D77] hover:text-[#00555D] transition-colors group/btn"
-        >
-          View Details 
-          <ArrowRight size={16} className="group-hover/btn:translate-x-1 transition-transform" />
-        </button>
+        {/* Right: View Button (Arrow Effect) */}
+        <div className="flex items-center gap-1 text-sm font-bold text-brand-primary opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
+          View Details <ArrowRight size={16} />
+        </div>
       </div>
 
     </div>

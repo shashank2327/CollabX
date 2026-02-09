@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import api from '../lib/axios';
 import { API_PATHS } from '../lib/apiPath';
-import { Loader2, Save, ArrowLeft, X } from 'lucide-react';
+import { Loader2, Save, ArrowLeft, X, Type, FileText, HelpCircle, Code2, Github } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const EditPost = () => {
@@ -18,7 +18,7 @@ const EditPost = () => {
     title: '',
     description: '',
     expectedContribution: '',
-    techStack: '', // We'll manage this as a comma-separated string for input
+    techStack: '', 
     githubRepoUrl: ''
   });
 
@@ -33,7 +33,7 @@ const EditPost = () => {
           title: post.title,
           description: post.description,
           expectedContribution: post.expectedContribution || '',
-          techStack: post.techStack.join(', '), // Convert array to string for input
+          techStack: post.techStack.join(', '), 
           githubRepoUrl: post.githubRepoUrl || ''
         });
       } catch (error) {
@@ -58,7 +58,6 @@ const EditPost = () => {
     setIsSaving(true);
 
     try {
-      // Convert comma string back to array for API
       const techArray = formData.techStack.split(',').map(t => t.trim()).filter(t => t);
 
       const payload = {
@@ -69,7 +68,7 @@ const EditPost = () => {
       await api.put(API_PATHS.HELP_POST.UPDATE(id), payload);
       
       toast.success("Post updated successfully!");
-      navigate('/open-posts'); // Go back to list
+      navigate('/open-posts'); 
     } catch (error) {
       console.error("Update Error:", error);
       toast.error(error.response?.data?.message || "Failed to update post.");
@@ -80,107 +79,117 @@ const EditPost = () => {
 
   if (isLoading) {
     return (
-      <div className="flex h-screen items-center justify-center bg-[#FAFAFA]">
-        <Loader2 size={40} className="text-[#006D77] animate-spin" />
+      <div className="flex h-screen items-center justify-center bg-brand-black">
+        <Loader2 size={40} className="text-brand-primary animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="flex bg-[#FAFAFA] min-h-screen">
+    <div className="flex bg-brand-black min-h-screen text-brand-text">
       <Sidebar />
-      <main className="ml-64 flex-1 p-8 overflow-y-auto h-screen">
+      <main className="ml-64 flex-1 p-8 overflow-y-auto h-screen bg-brand-black">
         <div className="max-w-3xl mx-auto">
           
           <button 
             onClick={() => navigate(-1)}
-            className="flex items-center gap-2 text-gray-500 hover:text-[#006D77] mb-6 font-medium transition-colors"
+            className="flex items-center gap-2 text-brand-muted hover:text-brand-primary mb-6 font-medium transition-colors"
           >
             <ArrowLeft size={20} /> Cancel Editing
           </button>
 
-          <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-8">
-            <h1 className="text-2xl font-bold text-gray-900 mb-6">Edit Post</h1>
+          <div className="bg-brand-graphite rounded-3xl border border-brand-border shadow-xl p-8">
+            <h1 className="text-2xl font-bold text-white mb-6">Edit Post</h1>
 
             <form onSubmit={handleSubmit} className="space-y-6">
               
               {/* Title */}
-              <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Project Title</label>
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-gray-300 flex items-center gap-2">
+                    <Type size={18} className="text-brand-primary" /> Project Title
+                </label>
                 <input
                   type="text"
                   name="title"
                   required
                   value={formData.title}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#006D77] focus:ring-2 focus:ring-[#006D77]/20 outline-none transition-all"
+                  className="w-full px-4 py-3 rounded-xl bg-black/40 border border-brand-border text-white focus:ring-1 focus:ring-brand-primary focus:border-brand-primary outline-none transition-all"
                 />
               </div>
 
               {/* Description */}
-              <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Description</label>
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-gray-300 flex items-center gap-2">
+                    <FileText size={18} className="text-brand-primary" /> Description
+                </label>
                 <textarea
                   name="description"
                   required
                   rows="4"
                   value={formData.description}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#006D77] focus:ring-2 focus:ring-[#006D77]/20 outline-none transition-all resize-none"
+                  className="w-full px-4 py-3 rounded-xl bg-black/40 border border-brand-border text-white focus:ring-1 focus:ring-brand-primary focus:border-brand-primary outline-none transition-all resize-none"
                 />
               </div>
 
               {/* Expected Contribution */}
-              <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Expected Contribution</label>
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-gray-300 flex items-center gap-2">
+                    <HelpCircle size={18} className="text-brand-primary" /> Expected Contribution
+                </label>
                 <textarea
                   name="expectedContribution"
                   rows="3"
                   value={formData.expectedContribution}
                   onChange={handleChange}
                   placeholder="What specifically do you need help with?"
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#006D77] focus:ring-2 focus:ring-[#006D77]/20 outline-none transition-all resize-none"
+                  className="w-full px-4 py-3 rounded-xl bg-black/40 border border-brand-border text-white focus:ring-1 focus:ring-brand-primary focus:border-brand-primary outline-none transition-all resize-none"
                 />
               </div>
 
               {/* Tech Stack */}
-              <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Tech Stack (comma separated)</label>
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-gray-300 flex items-center gap-2">
+                    <Code2 size={18} className="text-brand-primary" /> Tech Stack (comma separated)
+                </label>
                 <input
                   type="text"
                   name="techStack"
                   value={formData.techStack}
                   onChange={handleChange}
                   placeholder="e.g. React, Node.js, MongoDB"
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#006D77] focus:ring-2 focus:ring-[#006D77]/20 outline-none transition-all"
+                  className="w-full px-4 py-3 rounded-xl bg-black/40 border border-brand-border text-white focus:ring-1 focus:ring-brand-primary focus:border-brand-primary outline-none transition-all"
                 />
               </div>
 
               {/* Repo URL */}
-              <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">GitHub Repository URL</label>
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-gray-300 flex items-center gap-2">
+                    <Github size={18} className="text-brand-primary" /> GitHub Repository URL
+                </label>
                 <input
                   type="url"
                   name="githubRepoUrl"
                   value={formData.githubRepoUrl}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#006D77] focus:ring-2 focus:ring-[#006D77]/20 outline-none transition-all"
+                  className="w-full px-4 py-3 rounded-xl bg-black/40 border border-brand-border text-white focus:ring-1 focus:ring-brand-primary focus:border-brand-primary outline-none transition-all"
                 />
               </div>
 
               {/* Buttons */}
-              <div className="flex justify-end gap-3 pt-4 border-t border-gray-100 mt-6">
+              <div className="flex justify-end gap-3 pt-6 border-t border-brand-border mt-8">
                 <button
                   type="button"
                   onClick={() => navigate(-1)}
-                  className="px-6 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-50 transition-colors"
+                  className="px-6 py-3 rounded-xl font-bold text-brand-muted hover:text-white hover:bg-white/5 transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSaving}
-                  className="px-8 py-3 rounded-xl font-bold bg-[#006D77] text-white hover:bg-[#00555D] shadow-lg shadow-teal-900/20 transition-all flex items-center gap-2 disabled:opacity-70"
+                  className="px-8 py-3 rounded-xl font-bold bg-brand-primary text-white hover:bg-orange-600 shadow-lg shadow-orange-500/20 transition-all flex items-center gap-2 disabled:opacity-70"
                 >
                   {isSaving ? <Loader2 className="animate-spin" /> : <Save size={20} />}
                   Save Changes

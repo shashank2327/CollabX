@@ -3,7 +3,7 @@ import Sidebar from '../components/Sidebar';
 import HelpPostCard from '../components/HelpPostCard';
 import api from '../lib/axios';
 import { API_PATHS } from '../lib/apiPath';
-import { Loader2, HeartHandshake, ExternalLink } from 'lucide-react';
+import { Loader2, HeartHandshake, ExternalLink, Sparkles } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const MyContribution = () => {
@@ -28,43 +28,43 @@ const MyContribution = () => {
   }, []);
 
   return (
-    <div className="flex bg-[#FAFAFA] min-h-screen">
+    <div className="flex bg-brand-black min-h-screen text-brand-text">
       <Sidebar />
       
-      <main className="ml-64 flex-1 p-8 overflow-y-auto h-screen">
-        <div className="max-w-5xl mx-auto">
+      <main className="ml-64 flex-1 p-8 overflow-y-auto h-screen bg-brand-black relative">
+        <div className="max-w-5xl mx-auto relative z-10">
           
           {/* Header */}
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
-              <HeartHandshake className="text-[#006D77]" size={32} /> 
-              My Contributions
+            <h1 className="text-3xl font-extrabold text-white flex items-center gap-3">
+              <HeartHandshake className="text-brand-primary" size={32} /> 
+              My Contributions <Sparkles className="text-brand-primary opacity-50" size={20}/>
             </h1>
-            <p className="text-gray-500 mt-1 ml-11">
-              Projects where your request was accepted and you are now a team member.
+            <p className="text-brand-muted mt-2 ml-11 text-lg">
+              Projects where you are an official team member.
             </p>
           </div>
 
           {/* Loading State */}
           {isLoading ? (
             <div className="flex justify-center py-20">
-              <Loader2 size={40} className="text-[#006D77] animate-spin" />
+              <Loader2 size={40} className="text-brand-primary animate-spin" />
             </div>
           ) : posts.length === 0 ? (
             // Empty State
-            <div className="text-center py-16 bg-white rounded-2xl border border-dashed border-gray-300">
-              <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-400">
-                <HeartHandshake size={32} />
+            <div className="text-center py-20 bg-brand-graphite rounded-3xl border border-dashed border-brand-border shadow-xl">
+              <div className="w-20 h-20 bg-brand-black rounded-full flex items-center justify-center mx-auto mb-6 border border-brand-border">
+                <HeartHandshake size={36} className="text-brand-muted" />
               </div>
-              <h3 className="text-xl font-bold text-gray-700">No contributions yet</h3>
-              <p className="text-gray-500 mt-2 max-w-md mx-auto">
+              <h3 className="text-xl font-bold text-white">No contributions yet</h3>
+              <p className="text-brand-muted mt-2 max-w-md mx-auto text-lg">
                 You haven't been accepted into any projects yet. Go to the Feed and make a request!
               </p>
               <a 
                 href="/" 
-                className="inline-flex items-center gap-2 mt-6 text-[#006D77] font-semibold hover:underline"
+                className="inline-flex items-center gap-2 mt-8 text-brand-primary font-bold hover:text-orange-400 transition-colors bg-brand-primary/10 px-6 py-3 rounded-xl border border-brand-primary/20"
               >
-                Go to Feed <ExternalLink size={16} />
+                Go to Feed <ExternalLink size={18} />
               </a>
             </div>
           ) : (
@@ -74,7 +74,7 @@ const MyContribution = () => {
                 <div key={post._id} className="flex flex-col relative group">
                    
                    {/* Collaborative Badge */}
-                   <div className="absolute -top-2 -right-2 bg-[#006D77] text-white text-[10px] font-bold px-3 py-1 rounded-full shadow-sm z-20 flex items-center gap-1">
+                   <div className="absolute -top-3 -right-2 bg-brand-primary text-white text-[10px] font-bold px-3 py-1.5 rounded-full shadow-lg shadow-orange-500/30 z-20 flex items-center gap-1.5 transform group-hover:scale-105 transition-transform">
                       <HeartHandshake size={12} /> TEAM MEMBER
                    </div>
 
